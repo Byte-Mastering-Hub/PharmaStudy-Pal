@@ -1,0 +1,924 @@
+/* --- Global Setup --- */
+:root, [data-theme="light"] {
+    --font-family: 'Poppins', sans-serif;
+    
+    /* Light Mode (Default) */
+    --bg-color: #F4F7FC;
+    --bg-color-soft: #F9FAFD; 
+    --card-bg: #FFFFFF;
+    --primary-color: #007BFF;    
+    --accent-color: #4ADBC3;     
+    --text-color: #212529;       
+    --text-color-light: #6c757d; 
+    --border-color: #E0E0E0;
+    --shadow-color: rgba(99, 99, 99, 0.15);
+    --success-color: #057A55;    
+    --success-bg: #E6F7F2;
+    --warn-color: #D97706;       
+    --warn-bg: #FFF4E6;
+    --danger-color: #DC2626;     
+    --danger-bg: #FEE2E2;
+}
+
+/* --- Dark Mode Palette --- */
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --bg-color-soft: #1A1A1A; 
+    --card-bg: #1E1E1E;
+    --primary-color: #4D9FFF;
+    --accent-color: #4ADBC3;
+    --text-color: #E0E0E0;
+    --text-color-light: #9E9E9E;
+    --border-color: #333333;
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    --success-color: #34D399;
+    --success-bg: #064E3B;
+    --warn-color: #FBBF24;
+    --warn-bg: #78350F;
+    --danger-color: #F87171;
+    --danger-bg: #7F1D1D;
+}
+
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    background: linear-gradient(180deg, var(--bg-color-soft) 0%, var(--bg-color) 100vh);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+    min-height: 100vh;
+    
+    /* --- STICKY FOOTER RULES --- */
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Utility Class --- */
+.hidden {
+    display: none !important;
+}
+
+/* --- Header & Logo --- */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 5px var(--shadow-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+/* --- Main App Layout --- */
+main {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+
+    /* --- STICKY FOOTER RULE --- */
+    flex-grow: 1;
+}
+
+.view-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+
+/* --- Header Navigation with Icons --- */
+nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: none;
+    border: none;
+    font-family: var(--font-family);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color-light);
+    opacity: 1;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+.nav-btn svg {
+    stroke: var(--text-color-light);
+    transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+    color: var(--text-color);
+}
+.nav-btn:hover svg {
+    stroke: var(--text-color);
+}
+
+.nav-btn.active {
+    color: var(--primary-color);
+    background-color: color-mix(in srgb, var(--primary-color) 15%, transparent);
+}
+.nav-btn.active svg {
+    stroke: var(--primary-color);
+}
+
+/* --- Dark Mode Toggle --- */
+.theme-switch-wrapper { display: flex; align-items: center; margin-left: 1rem; }
+.theme-switch { display: inline-block; height: 24px; position: relative; width: 44px; }
+.theme-switch input { opacity: 0; width: 0; height: 0; }
+.slider { background-color: #ccc; bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; }
+.slider:before { background-color: #fff; bottom: 4px; content: ""; height: 16px; left: 4px; position: absolute; transition: .4s; width: 16px; }
+input:checked + .slider { background-color: var(--primary-color); }
+input:checked + .slider:before { transform: translateX(20px); }
+.slider.round { border-radius: 34px; }
+.slider.round:before { border-radius: 50%; }
+
+
+/* =================================== */
+/* --- VIEW 1: NEW DASHBOARD GRID --- */
+/* =================================== */
+
+/* --- Grid Widget Style --- */
+.grid-widget {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    width: 100%;
+}
+.grid-widget h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+/* --- Study Dashboard Grid Layout --- */
+.study-grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1.5rem;
+    width: 100%;
+    grid-template-areas:
+        "flashcard categories"
+        "flashcard progress"
+        "flashcard quote";
+}
+
+/* --- Widget Fade-in Animation --- */
+.study-grid-container .grid-widget {
+    animation: fadeInWidget 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes fadeInWidget {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Assigning widgets to grid areas --- */
+#flashcard-widget {
+    grid-area: flashcard;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+#categories-widget {
+    grid-area: categories;
+}
+#progress-widget {
+    grid-area: progress;
+}
+
+/* --- Quote Widget Style --- */
+#quote-widget {
+    grid-area: quote;
+    background: transparent;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#motivational-quote {
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--text-color-light);
+    padding: 0.5rem 1rem;
+    border-left: 4px solid var(--accent-color);
+    margin: 0;
+}
+
+/* --- Category Filter Design --- */
+.category-filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    width: 100%;
+}
+
+.category-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.category-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+.category-btn-all {
+    font-weight: 700 !important;
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+}
+
+.category-btn.active {
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* --- FIX for 'All' button --- */
+.category-btn-all.active {
+    background-color: color-mix(in srgb, var(--primary-color) 15%, transparent); /* Light blue bg */
+    color: var(--primary-color) !important; /* Keep blue text */
+    border-color: var(--primary-color) !important; /* Keep blue border */
+}
+
+.category-btn.active:hover {
+    border-color: var(--primary-color);
+    color: #fff;
+}
+/* Handle hover for fixed 'All' button */
+.category-btn-all.active:hover {
+    color: var(--primary-color) !important;
+}
+
+
+/* --- Progress Tracker --- */
+.progress-container {
+    width: 100%;
+    margin-bottom: 0;
+}
+.progress-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color-light);
+}
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background-color: var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+}
+.progress-bar-inner {
+    height: 100%;
+    width: 0%; 
+    background-color: var(--accent-color);
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+/* --- === FLASHCARD STYLES === --- */
+
+/* This rule was replaced to style the H2 *inside* the card */
+.flashcard-front #card-question-title {
+    font-size: 2.5rem; /* Slightly smaller to fit well */
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    text-align: center;
+    min-height: 0; /* We don't need the old min-height */
+}
+
+.flashcard-container {
+    width: 100%;
+    max-width: 500px;
+    height: 300px;
+    perspective: 1000px;
+    margin-bottom: 1rem;
+}
+
+.flashcard {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.6s, border-color 0.3s;
+    transform-style: preserve-3d;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px -8px var(--shadow-color);
+    border: 3px solid transparent; 
+    background-color: var(--card-bg);
+}
+
+.flashcard.known {
+    border-color: var(--success-color);
+}
+.flashcard.review {
+    border-color: var(--warn-color);
+}
+
+.flashcard.flipped {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 17px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    text-align: center;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* This rule was updated to stack the title and prompt */
+.flashcard-front {
+    flex-direction: column; /* Stacks the title and prompt vertically */
+}
+
+/* This rule was replaced to add the flip icon */
+#card-front-prompt {
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--text-color-light);
+    display: flex; /* Lets us add the icon */
+    align-items: center;
+    gap: 0.5rem; /* Space between icon and text */
+}
+
+/* This adds a simple refresh/flip icon using CSS */
+#card-front-prompt::before {
+    content: '↻';
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--accent-color);
+}
+
+.card-bookmark-icon {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    font-size: 1.5rem;
+}
+.flashcard-back {
+    transform: rotateY(180deg);
+    text-align: left;
+    align-items: flex-start;
+    padding: 1.5rem; 
+    overflow-y: auto;
+}
+#card-back-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; 
+}
+#card-back-content h3 {
+    font-size: 0.9rem; 
+    font-weight: 700;
+    color: #fff; 
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 20px; 
+    margin-top: 0.5rem;
+    padding-bottom: 0.4rem; 
+    display: inline-block; 
+}
+#card-back-content h3:first-child {
+    margin-top: 0;
+}
+#card-back-content h3:nth-of-type(1) {
+     background-color: var(--primary-color);
+}
+#card-back-content h3:nth-of-type(2) {
+     background-color: var(--accent-color);
+     color: #212529; 
+}
+#card-back-content h3:nth-of-type(3) {
+     background-color: var(--warn-color);
+}
+#card-back-content p {
+    font-size: 1rem;
+    margin-top: 0.1rem; 
+    padding-left: 0.5rem; 
+}
+
+.card-counter {
+    font-size: 0.9rem;
+    color: var(--text-color-light);
+    margin-bottom: 1rem;
+}
+.flashcard-nav {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 500px;
+    gap: 1rem;
+}
+.flashcard-nav button, .nav-main, .nav-accent {
+    font-family: var(--font-family);
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.nav-arrow {
+    background-color: var(--card-bg);
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    flex: 1;
+}
+.nav-arrow:hover { background-color: color-mix(in srgb, var(--text-color) 5%, var(--card-bg)); }
+.nav-main {
+    background-color: var(--primary-color);
+    color: #fff;
+    flex: 2; 
+}
+.nav-main:hover { opacity: 0.85; }
+
+/* --- Smart Quiz Button Style --- */
+.nav-accent {
+    background-color: var(--accent-color);
+    color: #212529;
+    width: 100%;
+}
+.nav-accent:hover {
+    opacity: 0.85;
+}
+[data-theme="dark"] .nav-accent {
+    color: #121212;
+}
+
+
+.mastery-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 500px;
+}
+.mastery-buttons button {
+    flex: 1;
+    padding: 0.6rem;
+    font-family: var(--font-family);
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+#mark-review {
+    background-color: var(--warn-bg);
+    color: var(--warn-color);
+    border: 1px solid var(--warn-color);
+}
+#mark-review:hover { background-color: color-mix(in srgb, var(--warn-color) 30%, transparent); }
+#mark-known {
+    background-color: var(--success-bg);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+#mark-known:hover { background-color: color-mix(in srgb, var(--success-color) 30%, transparent); }
+.bookmark-controls {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+.bookmark-controls span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-color-light);
+}
+.bookmark-btn {
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 50%;
+    line-height: 1;
+    opacity: 0.3;
+    transition: all 0.2s ease;
+}
+.bookmark-btn:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+.bookmark-btn.active {
+    opacity: 1;
+    transform: scale(1.1);
+}
+.bookmark-btn[data-bookmark="important"].active { filter: drop-shadow(0 0 3px #FBBF24); }
+.bookmark-btn[data-bookmark="favorite"].active { filter: drop-shadow(0 0 3px #F87171); }
+.bookmark-btn[data-bookmark="hard"].active { filter: drop-shadow(0 0 3px #DC2626); }
+
+
+/* =================================== */
+/* --- VIEW 2: QUIZ STYLES --- */
+/* =================================== */
+
+#quiz-view .grid-widget {
+    text-align: center;
+}
+#quiz-view h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+#quiz-view p {
+    margin-bottom: 1.5rem;
+}
+
+.quiz-start-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 400px;
+    margin: 1.5rem auto 0 auto;
+}
+
+#quiz-progress {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+#quiz-timer {
+    color: var(--warn-color);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+#quiz-question {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    min-height: 50px;
+}
+#quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.quiz-option {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    font-family: var(--font-family);
+    font-size: 1rem;
+    text-align: left;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color); /* --- FIX for dark mode quiz text --- */
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.quiz-option:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    background-color: color-mix(in srgb, var(--primary-color) 15%, transparent);
+}
+.quiz-option.correct {
+    background-color: var(--success-bg);
+    border-color: var(--success-color);
+    color: var(--success-color);
+    font-weight: 600;
+}
+.quiz-option.wrong {
+    background-color: var(--danger-bg);
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+    font-weight: 600;
+}
+.quiz-option:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+#quiz-score-screen h3 {
+    font-size: 1.75rem;
+    color: var(--primary-color);
+}
+#quiz-score-screen p {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+#review-answers-container {
+    text-align: left;
+    margin-bottom: 1.5rem;
+    background-color: var(--bg-color);
+    padding: 1rem;
+    border-radius: 8px;
+}
+#review-answers-container h4 {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+#review-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+#review-list li {
+    margin-bottom: 0.75rem;
+}
+#review-list li strong {
+    color: var(--danger-color);
+}
+#review-list li span {
+    color: var(--success-color);
+}
+
+
+/* =================================== */
+/* --- VIEW 3: SEARCH STYLES --- */
+/* =================================== */
+.search-container {
+    width: 100%;
+    text-align: center;
+}
+.search-container h2 {
+    color: var(--primary-color);
+}
+.search-container p {
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    opacity: 0.8;
+}
+#search-input {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-family: var(--font-family);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+#search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 30%, transparent);
+}
+#search-results-container {
+    text-align: left;
+}
+.search-result-item {
+    background-color: var(--bg-color); 
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+.search-result-item h3 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+.search-result-item p {
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    opacity: 1;
+}
+.search-result-item p strong {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+
+/* =================================== */
+/* --- RESPONSIVE STYLES --- */
+/* =================================== */
+
+/* --- Tablet & Mobile (800px and below) --- */
+@media (max-width: 800px) {
+    
+    /* --- Header --- */
+    header {
+        padding: 0.75rem 1rem;
+        flex-wrap: wrap; 
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .logo h1 {
+        font-size: 1.25rem;
+        text-align: center;
+        width: 100%; /* Make logo take full width */
+    }
+
+    nav {
+        width: 100%;
+        justify-content: center;
+        gap: 0.25rem;
+    }
+
+    .nav-btn {
+        padding: 0.5rem; /* Make button smaller */
+    }
+    
+    .nav-btn span {
+        display: none; /* Hide text, show only icon */
+    }
+
+    .theme-switch-wrapper {
+        margin-left: 0.5rem;
+    }
+
+    /* --- Main Layout --- */
+    main {
+        margin: 1rem auto;
+        padding: 0 1rem;
+    }
+
+    .grid-widget {
+        padding: 1rem;
+    }
+
+    /* --- Study Grid (from original file) --- */
+    .study-grid-container {
+        grid-template-columns: 1fr; /* Single column */
+        grid-template-areas:
+            "flashcard"
+            "categories"
+            "progress"
+            "quote";
+    }
+
+    /* --- Study View --- */
+    /* Updated rule for smaller title */
+    .flashcard-front #card-question-title {
+        font-size: 1.75rem; /* Smaller title */
+        min-height: 0;
+    }
+
+    .flashcard-container {
+        height: 250px; /* Smaller card */
+    }
+
+    .flashcard-back {
+        padding: 1rem;
+    }
+
+    #card-back-content h3 {
+        font-size: 0.85rem;
+        padding: 0.3rem 0.75rem;
+    }
+    #card-back-content p {
+        font-size: 0.9rem;
+    }
+
+    .flashcard-nav {
+        gap: 0.5rem;
+    }
+
+    .flashcard-nav button, .nav-main, .nav-accent {
+        font-size: 0.9rem; /* Smaller button text */
+        padding: 0.6rem;
+    }
+
+    .mastery-buttons {
+        gap: 0.5rem;
+    }
+    .mastery-buttons button {
+        font-size: 0.85rem;
+        padding: 0.5rem;
+    }
+
+    .bookmark-controls {
+        gap: 0.5rem;
+    }
+    .bookmark-btn {
+        font-size: 1.25rem;
+    }
+
+    /* --- Quiz View --- */
+    .quiz-start-options {
+        max-width: 100%;
+    }
+
+    #quiz-question {
+        font-size: 1.1rem;
+        min-height: 40px;
+    }
+
+    .quiz-option {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* --- Search View --- */
+    #search-input {
+        padding: 0.8rem;
+        font-size: 1rem;
+        }
+
+        .search-result-item {
+        padding: 1rem;
+        }
+        .search-result-item h3 {
+        font-size: 1.25rem;
+        }
+        .search-result-item p {
+        font-size: 0.9rem;
+        }
+
+        footer {
+        margin-top: 1.5rem;
+        padding: 1rem 0.75rem;
+        }
+
+        footer p {
+        font-size: 0.9rem;
+        }
+    }
+    footer {
+        margin-top: 3rem;
+        padding: 1.5rem 1rem;
+        text-align: center;
+        background-color: var(--card-bg);
+        border-top: 1px solid var(--border-color);
+        color: var(--text-color-light);
+        box-shadow: 0 -6px 16px -8px var(--shadow-color);
+        transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    }
+
+    footer p {
+        font-size: 1rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+
+    footer a {
+        text-decoration: none;
+    }
+    
+    footer span {
+        color: var(--primary-color);
+        font-weight: 700;
+    }
