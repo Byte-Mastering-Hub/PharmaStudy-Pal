@@ -2,8 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 1. OUR DRUG DATABASE (40+ ITEMS) ---
     const drugDatabase = [
-        // (Database unchanged)
-        // Antibiotics
         { name: "Amoxicillin", category: "Antibiotics", use: "Bacterial infections (e.g., ear infections, strep throat)", sideEffects: "Nausea, vomiting, diarrhea, rash" },
         { name: "Azithromycin", category: "Antibiotics", use: "Bacterial infections (e.g., pneumonia, sinus infections)", sideEffects: "Diarrhea, nausea, abdominal pain" },
         { name: "Ciprofloxacin", category: "Antibiotics", use: "Bacterial infections (e.g., UTI, skin infections)", sideEffects: "Nausea, diarrhea, headache, risk of tendon rupture (rare)" },
@@ -70,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentQuizQuestionIndex = 0;
     let quizScore = 0;
     let wrongAnswers = [];
-    let quizTimerInterval;
+    let quizTimerInterval = null;
     let quizTimeLeft = 30;
 
 
@@ -80,10 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('theme-toggle');
     const motivationalQuoteEl = document.getElementById('motivational-quote');
     const flashcard = document.getElementById('flashcard');
-    
-    // --- MODIFIED: Point to the new H2 *above* the card ---
     const cardQuestionTitle = document.getElementById('card-question-title'); 
-    
     const cardBookmarkIcon = document.getElementById('card-bookmark-icon');
     const drugClass = document.getElementById('drug-class');
     const drugUse = document.getElementById('drug-use');
@@ -118,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- 4. CORE APP FUNCTIONS ---
-    // (Unchanged)
     function init() {
         initTheme();
         showRandomQuote();
@@ -127,6 +121,22 @@ document.addEventListener('DOMContentLoaded', () => {
         updateFilteredDrugs();
         updateProgress();
         showCard(0);
+
+        // BUG: create fake next button (visible but intentionally non-functional)
+        if (!document.getElementById('fake-next-btn')) {
+            const fakeBtn = document.createElement('button');
+            fakeBtn.id = 'fake-next-btn';
+            fakeBtn.className = 'nav-main';
+            fakeBtn.style.marginTop = '12px';
+            fakeBtn.textContent = 'Next Question';
+            // append near the quiz options area so it's visible when quiz opens
+            quizQuestionScreen.appendChild(fakeBtn);
+            // attach a noop listener (bug)
+            fakeBtn.addEventListener('click', (e) => {
+                // BUG: intentionally do nothing — teacher should see this as "broken"
+                console.log('BUG: Fake Next Question clicked (does nothing).');
+            });
+        }
     }
 
     function addEventListeners() {
@@ -160,7 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 5. THEME (DARK MODE) FUNCTIONS ---
-    // (Unchanged)
     function initTheme() {
         const savedTheme = localStorage.getItem('theme') || 'light';
         setTheme(savedTheme);
@@ -179,9 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- 6. STUDY VIEW FUNCTIONS (Flashcards, Progress, Bookmarks) ---
-
     function createCategoryButtons() {
-        // (Unchanged)
         const smartFilters = ['all', '⭐ Important', '❤️ Favorite', '❗ Hard'];
         const dynamicCategories = [...new Set(drugDatabase.map(drug => drug.category))];
         const categories = [...smartFilters, ...dynamicCategories.sort()];
@@ -204,7 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleCategoryClick(e) {
-        // (Unchanged)
         if (e.target.classList.contains('category-btn')) {
             document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
             e.target.classList.add('active');
@@ -215,7 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateFilteredDrugs() {
-        // (Unchanged)
         switch (currentFilter) {
             case 'all':
                 filteredDrugs = [...drugDatabase];
@@ -237,9 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showCard(index) {
         if (filteredDrugs.length === 0) {
-            // --- MODIFIED: Update the new H2 tag ---
             cardQuestionTitle.textContent = "No cards in this category!";
-            
             drugClass.textContent = "-";
             drugUse.textContent = "-";
             drugEffects.textContent = "-";
@@ -254,9 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const drug = filteredDrugs[currentCardIndex];
         const drugName = drug.name;
 
-        // --- MODIFIED: Update the new H2 tag ---
         cardQuestionTitle.textContent = drugName;
-        
         drugClass.textContent = drug.category;
         drugUse.textContent = drug.use;
         drugEffects.textContent = drug.sideEffects;
@@ -278,23 +279,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function flipCard() {
-        // (Unchanged)
         flashcard.classList.toggle('flipped');
         isFlipped = !isFlipped;
     }
 
     function nextCard() {
-        // (Unchanged)
         showCard(currentCardIndex + 1);
     }
 
     function prevCard() {
-        // (Unchanged)
         showCard(currentCardIndex - 1);
     }
 
     function setMasteryStatus(status) { 
-        // (Unchanged)
         const drugName = filteredDrugs[currentCardIndex].name;
         if (mastery[drugName] === status) {
             delete mastery[drugName];
@@ -313,7 +310,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateProgress() {
-        // (Unchanged)
         const knownCount = Object.values(mastery).filter(s => s === 'known').length;
         const totalCount = drugDatabase.length;
         const percentage = totalCount > 0 ? Math.round((knownCount / totalCount) * 100) : 0;
@@ -324,7 +320,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleBookmarkClick(e) {
-        // (Unchanged)
         if (e.target.classList.contains('bookmark-btn')) {
             const type = e.target.dataset.bookmark; 
             const drugName = filteredDrugs[currentCardIndex].name;
@@ -333,7 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function toggleBookmark(type, drugName) {
-        // (Unchanged)
         const list = bookmarks[type];
         const index = list.indexOf(drugName);
         if (index > -1) {
@@ -347,7 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateBookmarkButtonStyles(drugName) {
-        // (Unchanged)
         bookmarkBtns.forEach(btn => {
             const type = btn.dataset.bookmark;
             if (drugName && bookmarks[type].includes(drugName)) {
@@ -359,7 +352,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateCardBookmarkIcon(drugName) {
-        // (Unchanged)
         if (bookmarks.important.includes(drugName)) {
             cardBookmarkIcon.textContent = '⭐';
         } else if (bookmarks.favorite.includes(drugName)) {
@@ -372,8 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // --- 7. QUIZ VIEW FUNCTIONS ---
-    // (Unchanged)
+    // --- 7. QUIZ VIEW FUNCTIONS (BUGGY BUT WORKING) ---
     function startQuiz(mode = 'all') {
         quizQuestions = generateQuizQuestions(10, mode);
         
@@ -389,16 +380,23 @@ document.addEventListener('DOMContentLoaded', () => {
         quizScoreScreen.classList.add('hidden');
         quizQuestionScreen.classList.remove('hidden');
         totalQuestions.textContent = quizQuestions.length;
+
+        // BUG: Freeze timer — show initial time but do NOT start countdown
+        clearInterval(quizTimerInterval);
+        quizTimerInterval = null; // ensure it's not running
+        quizTimeLeft = 30;
+        quizTimer.textContent = `00:${quizTimeLeft < 10 ? '0' : ''}${quizTimeLeft}`;
+        quizTimer.style.color = 'var(--warn-color)';
+
         loadQuizQuestion();
     }
 
     function generateQuizQuestions(numQuestions, mode = 'all') {
-        let quizDataSource;
-
         const allDrivableDrugs = drugDatabase.filter(d => 
             d.category !== "Pharma Formulas" && d.category !== "Medical Abbreviations"
         );
 
+        let quizDataSource;
         if (mode === 'smart') {
             const hardCards = bookmarks.hard || [];
             const reviewCards = Object.keys(mastery).filter(key => mastery[key] === 'review');
@@ -415,20 +413,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const shuffledDrugs = [...quizDataSource].sort(() => 0.5 - Math.random());
         const questions = [];
-        
         const numToGenerate = Math.min(numQuestions, shuffledDrugs.length);
 
         for (let i = 0; i < numToGenerate; i++) {
             const correctDrug = shuffledDrugs[i];
-            
             const otherOptions = allDrivableDrugs
-                .filter(d => d.name !== correctDrug.name) 
-                .sort(() => 0.5 - Math.random()) 
-                .slice(0, 3) 
+                .filter(d => d.name !== correctDrug.name)
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 3)
                 .map(d => d.name);
-                
             const options = [correctDrug.name, ...otherOptions].sort(() => 0.5 - Math.random());
-            
             questions.push({
                 question: `Which drug is used for: "${correctDrug.use}"?`,
                 options: options,
@@ -440,16 +434,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function loadQuizQuestion() {
+        // If we've exhausted questions, end quiz normally
         if (currentQuizQuestionIndex >= quizQuestions.length) {
             endQuiz();
             return;
         }
 
-        clearInterval(quizTimerInterval);
+        // BUG: Freeze quiz progression once we reach question index 2 (i.e., after Q2)
+        // This allows Q0 and Q1 to be answered; once currentQuizQuestionIndex becomes 2 we stop loading new questions.
+        if (currentQuizQuestionIndex >= 2) {
+
+            // REALISTIC ERROR POPUP (Option A)
+            alert("⚠️ ERROR: Quiz engine failed to load the next question.\n\nCode: QUIZ_LOAD_ERR_502\nDetails: Unexpected null response.\n\nPlease try restarting the quiz.");
+
+            // Show the question text for the "frozen" state so UI doesn't vanish — but disable interactions
+            const q = quizQuestions[Math.min(currentQuizQuestionIndex, quizQuestions.length - 1)];
+            quizQuestion.textContent = q ? q.question : "Something went wrong with the quiz (BUG).";
+            questionNumber.textContent = Math.min(currentQuizQuestionIndex + 1, quizQuestions.length);
+            quizOptions.innerHTML = '';
+
+            // create disabled options to make it obvious nothing works
+            if (q) {
+                q.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'quiz-option';
+                    btn.textContent = opt;
+                    btn.disabled = true; // BUG: disabled after Q2
+                    quizOptions.appendChild(btn);
+                });
+            }
+            // keep timer frozen as well
+            return;
+        }
+
+        // Normal (but still with frozen timer) load for Q0 and Q1
+        // NOTE: we intentionally do not start the interval for the timer (BUG).
+        // clear any existing interval (safety)
+        if (quizTimerInterval) {
+            clearInterval(quizTimerInterval);
+            quizTimerInterval = null;
+        }
         quizTimeLeft = 30;
         quizTimer.textContent = `00:${quizTimeLeft < 10 ? '0' : ''}${quizTimeLeft}`;
         quizTimer.style.color = 'var(--warn-color)';
-        quizTimerInterval = setInterval(updateQuizTimer, 1000);
 
         const q = quizQuestions[currentQuizQuestionIndex];
         quizQuestion.textContent = q.question;
@@ -467,6 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateQuizTimer() {
+        // This function would decrement the timer, but since we never call setInterval (BUG) it won't run.
         quizTimeLeft--;
         quizTimer.textContent = `00:${quizTimeLeft < 10 ? '0' : ''}${quizTimeLeft}`;
         if (quizTimeLeft <= 10) {
@@ -487,17 +515,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         wrongAnswers.push(quizQuestions[currentQuizQuestionIndex]);
-        setTimeout(() => {
-            currentQuizQuestionIndex++;
-            loadQuizQuestion();
-        }, 1500);
+        // BUG: normally we'd proceed — we intentionally stop progression here
     }
 
     function selectQuizAnswer(e) {
-        clearInterval(quizTimerInterval);
-        const selectedOption = e.target;
+        const selectedOption = e.currentTarget || e.target;
         const selectedAnswer = selectedOption.dataset.answer;
         const correctAnswer = quizQuestions[currentQuizQuestionIndex].answer;
+
+        // disable all options to show selection result
         document.querySelectorAll('.quiz-option').forEach(btn => btn.disabled = true);
 
         if (selectedAnswer === correctAnswer) {
@@ -505,13 +531,26 @@ document.addEventListener('DOMContentLoaded', () => {
             quizScore++;
         } else {
             selectedOption.classList.add('wrong');
-            document.querySelector(`.quiz-option[data-answer="${correctAnswer}"]`).classList.add('correct');
+            const correctBtn = Array.from(document.querySelectorAll('.quiz-option')).find(b => b.dataset.answer === correctAnswer);
+            if (correctBtn) correctBtn.classList.add('correct');
             wrongAnswers.push(quizQuestions[currentQuizQuestionIndex]);
         }
-        setTimeout(() => {
-            currentQuizQuestionIndex++;
-            loadQuizQuestion();
-        }, 1500);
+
+        // BUG: allow auto-advance only for first two questions (index 0 -> go to 1; index 1 -> DO NOT advance)
+        if (currentQuizQuestionIndex < 1) {
+            // after answering Q0, move to Q1
+            setTimeout(() => {
+                currentQuizQuestionIndex++;
+                loadQuizQuestion();
+            }, 700);
+        } else {
+            // BUG: do NOT progress after Q1 (i.e., after answering the second question)
+            // Instead keep the quiz "stuck" here and disable options so user cannot continue.
+            console.log('BUG: progression blocked after question 2. Quiz frozen intentionally.');
+            // make sure all options remain disabled
+            document.querySelectorAll('.quiz-option').forEach(btn => btn.disabled = true);
+            // we intentionally do not increment currentQuizQuestionIndex or call loadQuizQuestion()
+        }
     }
 
     function endQuiz() {
@@ -521,12 +560,9 @@ document.addEventListener('DOMContentLoaded', () => {
         quizScoreEl.textContent = `${quizScore} / ${quizQuestions.length}`;
         reviewList.innerHTML = '';
         if (wrongAnswers.length > 0) {
-            reviewList.innerHTML = '';
             wrongAnswers.forEach(q => {
                 const li = document.createElement('li');
-                li.innerHTML = `Question: "${q.question}"<br>
-                              <strong>Your Pick: (Wrong or Timed Out)</strong><br>
-                              Correct Answer: <span>${q.answer}</span>`;
+                li.innerHTML = `Question: "${q.question}"<br><strong>Your Pick: (Wrong or Timed Out)</strong><br>Correct Answer: <span>${q.answer}</span>`;
                 reviewList.appendChild(li);
             });
         } else {
@@ -536,7 +572,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- 8. SEARCH VIEW FUNCTIONS ---
-    // (Unchanged)
     function handleSearch() {
         const query = searchInput.value.toLowerCase().trim();
         searchResultsContainer.innerHTML = '';
@@ -546,9 +581,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const results = drugDatabase.filter(drug => 
-            drug.name.toLowerCase().includes(query)
-        );
+        const results = drugDatabase.filter(drug => drug.name.toLowerCase().includes(query));
 
         if (results.length === 0) {
             searchResultsContainer.innerHTML = '<p style="color: var(--text-color-light);">No drugs found matching your search.</p>';
